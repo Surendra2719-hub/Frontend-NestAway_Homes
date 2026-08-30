@@ -43,25 +43,31 @@ export const api = {
             name: data.name || data.fullName || formatNameFromEmail(credentials.email)
           } 
         };
+      } else {
+        // Backend contacted, but password or email was wrong!
+        const errData = await res.json().catch(() => ({}));
+        return {
+          success: false,
+          message: errData.message || 'Invalid email or password'
+        };
       }
     } catch (e) {
       console.warn("Backend login offline, running demo session", e);
+      // Demo fallback only when backend server is completely unreachable offline
+      const role = credentials.email.includes('host') ? 'HOST' : credentials.email.includes('admin') ? 'ADMIN' : 'GUEST';
+      const computedName = formatNameFromEmail(credentials.email);
+
+      return {
+        success: true,
+        data: {
+          token: 'mock-jwt-token-xyz-12345',
+          id: role === 'HOST' ? 101 : role === 'ADMIN' ? 777 : Math.floor(Math.random() * 800) + 200,
+          name: computedName,
+          email: credentials.email,
+          role: role
+        }
+      };
     }
-
-    // Dynamic demo mode fallback using actual credentials email prefix
-    const role = credentials.email.includes('host') ? 'HOST' : credentials.email.includes('admin') ? 'ADMIN' : 'GUEST';
-    const computedName = formatNameFromEmail(credentials.email);
-
-    return {
-      success: true,
-      data: {
-        token: 'mock-jwt-token-xyz-12345',
-        id: role === 'HOST' ? 101 : role === 'ADMIN' ? 777 : Math.floor(Math.random() * 800) + 200,
-        name: computedName,
-        email: credentials.email,
-        role: role
-      }
-    };
   },
 
   // ==========================================
