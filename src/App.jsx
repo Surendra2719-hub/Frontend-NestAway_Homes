@@ -117,6 +117,7 @@ function MainApp() {
             onNavigateWishlist={() => setActivePage('wishlist')}
             onNavigateBookings={() => setActivePage('bookings')}
             onNavigateHost={() => setActivePage('host')}
+            onNavigateAdmin={() => setActivePage('admin')}
           />
         );
       case 'wishlist':

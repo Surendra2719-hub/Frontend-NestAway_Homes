@@ -3,7 +3,7 @@ import { User, Mail, Phone, Shield, CheckCircle2, Award, Heart, Calendar, ArrowR
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 
-export const ProfilePage = ({ onNavigateWishlist, onNavigateBookings, onNavigateHost }) => {
+export const ProfilePage = ({ onNavigateWishlist, onNavigateBookings, onNavigateHost, onNavigateAdmin }) => {
   const { user, updateUserProfile, wishlist } = useAuth();
   
   const [name, setName] = useState(user?.name || '');
@@ -63,9 +63,9 @@ export const ProfilePage = ({ onNavigateWishlist, onNavigateBookings, onNavigate
           <h2>{user.name}</h2>
           <p className="user-email-text">{user.email}</p>
           
-          <div className="role-badge-pill">
+          <div className={`role-badge-pill ${user.role === 'ADMIN' ? 'role-admin' : ''}`}>
             <Shield size={14} />
-            <span>{user.role} Account</span>
+            <span>{user.role === 'ADMIN' ? 'ADMIN SUPERUSER' : `${user.role} Account`}</span>
           </div>
 
           <hr className="profile-card-divider" />
@@ -84,7 +84,8 @@ export const ProfilePage = ({ onNavigateWishlist, onNavigateBookings, onNavigate
             </button>
           </div>
 
-          {user.role !== 'HOST' && (
+          {/* Render Upgrade to Host banner ONLY for GUEST users (Not Admin & Not Host) */}
+          {user.role === 'GUEST' && (
             <div className="upgrade-host-banner">
               <Award size={24} color="#FF385C" />
               <div>
@@ -159,6 +160,18 @@ export const ProfilePage = ({ onNavigateWishlist, onNavigateBookings, onNavigate
             </button>
           </form>
 
+          {user.role === 'ADMIN' && (
+            <div className="host-quick-actions">
+              <hr className="profile-card-divider" />
+              <h4>Admin Management</h4>
+              <button className="btn-primary admin-dash-btn" onClick={onNavigateAdmin}>
+                <Shield size={16} />
+                <span>Open Admin Control & Approval Operations</span>
+                <ArrowRight size={16} />
+              </button>
+            </div>
+          )}
+
           {user.role === 'HOST' && (
             <div className="host-quick-actions">
               <hr className="profile-card-divider" />
@@ -230,6 +243,11 @@ export const ProfilePage = ({ onNavigateWishlist, onNavigateBookings, onNavigate
           padding: 0.35rem 0.85rem;
           border-radius: var(--radius-pill);
           text-transform: uppercase;
+        }
+
+        .role-admin {
+          background: #222222 !important;
+          color: white !important;
         }
 
         .profile-card-divider {
@@ -371,6 +389,16 @@ export const ProfilePage = ({ onNavigateWishlist, onNavigateBookings, onNavigate
         .host-quick-actions h4 {
           font-size: 1.05rem;
           margin-bottom: 0.75rem;
+        }
+
+        .admin-dash-btn {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          padding: 0.85rem 1.25rem;
+          background: #222222;
+          border-color: #222222;
         }
 
         .host-dash-btn {

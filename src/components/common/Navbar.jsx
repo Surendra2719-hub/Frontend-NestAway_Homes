@@ -53,10 +53,17 @@ export const Navbar = ({ activePage, setActivePage }) => {
           </button>
         </nav>
 
-        {/* Right Actions */}
+        {/* Right Actions depending on User Role (ADMIN vs HOST vs GUEST) */}
         <div className="right-nav-actions">
-          {/* Become a Host Button */}
-          {user?.role === 'HOST' ? (
+          {user?.role === 'ADMIN' ? (
+            <button 
+              className="btn-primary admin-nav-btn" 
+              onClick={() => setActivePage('admin')}
+            >
+              <Shield size={16} />
+              <span>Admin Panel</span>
+            </button>
+          ) : user?.role === 'HOST' ? (
             <button 
               className="btn-secondary host-btn-small" 
               onClick={() => setActivePage('host')}
@@ -94,6 +101,13 @@ export const Navbar = ({ activePage, setActivePage }) => {
                     <span className="user-role-tag">{user.role}</span>
                   </div>
                   <hr className="dropdown-divider" />
+
+                  {user.role === 'ADMIN' && (
+                    <button onClick={() => setActivePage('admin')} className="dropdown-item admin-highlight">
+                      <Shield size={16} />
+                      <span>Admin Operations Dashboard</span>
+                    </button>
+                  )}
                   
                   <button onClick={() => setActivePage('profile')} className="dropdown-item">
                     <User size={16} />
@@ -109,13 +123,6 @@ export const Navbar = ({ activePage, setActivePage }) => {
                     <Heart size={16} />
                     <span>Saved Wishlist ({wishlist.length})</span>
                   </button>
-
-                  {user.role === 'ADMIN' && (
-                    <button onClick={() => setActivePage('admin')} className="dropdown-item admin-highlight">
-                      <Shield size={16} />
-                      <span>Admin Approval Queue</span>
-                    </button>
-                  )}
 
                   <hr className="dropdown-divider" />
                   
@@ -246,6 +253,17 @@ export const Navbar = ({ activePage, setActivePage }) => {
           display: flex;
           align-items: center;
           gap: 1.25rem;
+        }
+
+        .admin-nav-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.5rem 1rem;
+          font-size: 0.88rem;
+          background: #222222;
+          border-color: #222222;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .host-link-btn {
