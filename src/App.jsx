@@ -133,7 +133,7 @@ function MainApp() {
           <AuthModal
             isModal={false}
             initialTab={authModalTab}
-            onAuthSuccess={() => setActivePage('detail')}
+            onAuthSuccess={() => setActivePage('home')}
           />
         );
       default:
