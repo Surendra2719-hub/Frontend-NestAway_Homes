@@ -44,7 +44,6 @@ export const api = {
           } 
         };
       } else {
-        // Backend contacted, but password or email was wrong!
         const errData = await res.json().catch(() => ({}));
         return {
           success: false,
@@ -52,20 +51,10 @@ export const api = {
         };
       }
     } catch (e) {
-      console.warn("Backend login offline, running demo session", e);
-      // Demo fallback only when backend server is completely unreachable offline
-      const role = credentials.email.includes('host') ? 'HOST' : credentials.email.includes('admin') ? 'ADMIN' : 'GUEST';
-      const computedName = formatNameFromEmail(credentials.email);
-
+      console.error("Backend login error", e);
       return {
-        success: true,
-        data: {
-          token: 'mock-jwt-token-xyz-12345',
-          id: role === 'HOST' ? 101 : role === 'ADMIN' ? 777 : Math.floor(Math.random() * 800) + 200,
-          name: computedName,
-          email: credentials.email,
-          role: role
-        }
+        success: false,
+        message: "Cannot connect to backend server. Please verify network connection."
       };
     }
   },
@@ -99,22 +88,20 @@ export const api = {
             ...data
           } 
         };
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        return {
+          success: false,
+          message: errData.message || 'Registration failed. Email may already be registered.'
+        };
       }
     } catch (e) {
-      console.warn("Backend register offline, running demo mode", e);
+      console.error("Backend register error", e);
+      return {
+        success: false,
+        message: "Cannot connect to server. Please check your internet connection."
+      };
     }
-
-    // Demo fallback preserving actual user inputs
-    return {
-      success: true,
-      data: {
-        id: Math.floor(Math.random() * 1000) + 1,
-        name: name || formatNameFromEmail(email),
-        email: email,
-        phone: phone,
-        role: isHost ? 'HOST' : 'GUEST'
-      }
-    };
   },
 
   // GET /api/users/{id}
@@ -129,7 +116,7 @@ export const api = {
     } catch (e) {
       console.warn("Backend getUserById offline", e);
     }
-    return { id, name: "User Profile", email: "user@nestaway.com", role: "GUEST" };
+    return null;
   },
 
   // PUT /api/users/{id}
@@ -235,7 +222,6 @@ export const api = {
         images: [propertyData.coverImage || "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80"],
         host: { id: hostId }
       };
-      MOCK_PROPERTIES.unshift(createdProperty);
     }
 
     if (propertyData.coverImage && createdProperty.id) {
@@ -276,7 +262,7 @@ export const api = {
       console.warn("Backend properties offline, returning mock dataset");
     }
 
-    // Mock dataset filter
+    // Mock dataset fallback for public home browse
     let result = [...MOCK_PROPERTIES];
     if (city && city !== 'All') {
       result = result.filter(p => p.city.toLowerCase().includes(city.toLowerCase()) || p.location?.toLowerCase().includes(city.toLowerCase()));
@@ -304,7 +290,7 @@ export const api = {
   },
 
   // GET /api/properties/host/{hostId} - Strictly Filtered by User ID
-  getHostProperties: async (hostId, userEmail) => {
+  getHostProperties: async (hostId) => {
     try {
       const res = await fetch(`${BASE_URL}/properties/host/${hostId}`, {
         headers: getHeaders()
@@ -315,8 +301,7 @@ export const api = {
     } catch (e) {
       console.warn("Backend getHostProperties offline");
     }
-    // Demo mode: strictly match hostId or user email!
-    return MOCK_PROPERTIES.filter(p => p.host?.id === Number(hostId) || (userEmail && p.host?.email === userEmail));
+    return [];
   },
 
   // PUT /api/properties/{propertyId}/host/{hostId}
@@ -332,10 +317,6 @@ export const api = {
       }
     } catch (e) {
       console.warn("Backend updateProperty offline");
-    }
-    const index = MOCK_PROPERTIES.findIndex(p => p.id === Number(propertyId));
-    if (index !== -1) {
-      MOCK_PROPERTIES[index] = { ...MOCK_PROPERTIES[index], ...propertyData };
     }
     return { success: true };
   },
@@ -353,8 +334,6 @@ export const api = {
     } catch (e) {
       console.warn("Backend deleteProperty offline");
     }
-    const idx = MOCK_PROPERTIES.findIndex(p => p.id === Number(propertyId));
-    if (idx !== -1) MOCK_PROPERTIES.splice(idx, 1);
     return { success: true };
   },
 
@@ -370,7 +349,7 @@ export const api = {
     } catch (e) {
       console.warn("Backend getPendingProperties offline");
     }
-    return MOCK_PROPERTIES.filter(p => p.status === 'PENDING');
+    return [];
   },
 
   // PUT /api/properties/{propertyId}/admin/{adminId}/approve
@@ -386,8 +365,6 @@ export const api = {
     } catch (e) {
       console.warn("Backend approveProperty offline");
     }
-    const prop = MOCK_PROPERTIES.find(p => p.id === Number(propertyId));
-    if (prop) prop.status = 'APPROVED';
     return { success: true };
   },
 
@@ -404,8 +381,6 @@ export const api = {
     } catch (e) {
       console.warn("Backend rejectProperty offline");
     }
-    const prop = MOCK_PROPERTIES.find(p => p.id === Number(propertyId));
-    if (prop) prop.status = 'REJECTED';
     return { success: true };
   },
 
@@ -430,11 +405,6 @@ export const api = {
       }
     } catch (e) {
       console.warn("Backend addPropertyImage offline");
-    }
-    const prop = MOCK_PROPERTIES.find(p => p.id === Number(propertyId));
-    if (prop) {
-      if (!prop.images) prop.images = [];
-      prop.images.push(imageData.imageUrl);
     }
     return { success: true };
   },
@@ -513,7 +483,6 @@ export const api = {
       totalPrice: bookingData.totalPrice || (property.pricePerNight * 3),
       status: "CONFIRMED"
     };
-    MOCK_BOOKINGS.unshift(newBooking);
     return newBooking;
   },
 
@@ -545,7 +514,7 @@ export const api = {
     } catch (e) {
       console.warn("Backend getUserBookings offline");
     }
-    return MOCK_BOOKINGS;
+    return [];
   },
 
   // PUT /api/bookings/{bookingId}/guest/{guestId}/cancel
@@ -561,15 +530,13 @@ export const api = {
     } catch (e) {
       console.warn("Backend cancelBooking offline");
     }
-    const b = MOCK_BOOKINGS.find(item => item.id === Number(bookingId));
-    if (b) b.status = "CANCELLED";
     return { success: true };
   },
 
   // PUT /api/bookings/{bookingId}/host/{hostId}/confirm
   confirmBooking: async (bookingId, hostId) => {
     try {
-      const res = await fetch(`${BASE_URL}/bookings/{bookingId}/host/${hostId}/confirm`, {
+      const res = await fetch(`${BASE_URL}/bookings/${bookingId}/host/${hostId}/confirm`, {
         method: 'PUT',
         headers: getHeaders()
       });
@@ -579,8 +546,6 @@ export const api = {
     } catch (e) {
       console.warn("Backend confirmBooking offline");
     }
-    const b = MOCK_BOOKINGS.find(item => item.id === Number(bookingId));
-    if (b) b.status = "CONFIRMED";
     return { success: true };
   }
 };
