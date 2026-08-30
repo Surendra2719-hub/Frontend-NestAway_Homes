@@ -1,6 +1,6 @@
 import { MOCK_PROPERTIES, MOCK_BOOKINGS } from './mockData';
 
-const BASE_URL = '/api';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Helper to get headers with Bearer token
 const getHeaders = () => {
