@@ -56,7 +56,7 @@ export const api = {
       success: true,
       data: {
         token: 'mock-jwt-token-xyz-12345',
-        id: role === 'HOST' ? 101 : role === 'ADMIN' ? 777 : 999,
+        id: role === 'HOST' ? 101 : role === 'ADMIN' ? 777 : Math.floor(Math.random() * 800) + 200,
         name: computedName,
         email: credentials.email,
         role: role
@@ -224,10 +224,10 @@ export const api = {
         rating: 5.0,
         reviewCount: 1,
         status: 'PENDING',
-        isSuperhost: true,
+        isSuperhost: false,
         coverImage: propertyData.coverImage || "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80",
         images: [propertyData.coverImage || "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80"],
-        host: { id: hostId, name: "Surendra (Host)" }
+        host: { id: hostId }
       };
       MOCK_PROPERTIES.unshift(createdProperty);
     }
@@ -245,20 +245,6 @@ export const api = {
     }
 
     return createdProperty;
-  },
-
-  // Seed Host Properties to Live Spring Boot Backend
-  seedHostProperties: async (hostId = 101) => {
-    let seededCount = 0;
-    for (const prop of MOCK_PROPERTIES) {
-      try {
-        await api.createProperty(hostId, prop);
-        seededCount++;
-      } catch (e) {
-        console.warn("Seeding error", e);
-      }
-    }
-    return { success: true, count: seededCount };
   },
 
   // GET /api/properties & GET /api/properties/search
@@ -311,8 +297,8 @@ export const api = {
     return MOCK_PROPERTIES.find(p => p.id === Number(id)) || MOCK_PROPERTIES[0];
   },
 
-  // GET /api/properties/host/{hostId}
-  getHostProperties: async (hostId) => {
+  // GET /api/properties/host/{hostId} - Strictly Filtered by User ID
+  getHostProperties: async (hostId, userEmail) => {
     try {
       const res = await fetch(`${BASE_URL}/properties/host/${hostId}`, {
         headers: getHeaders()
@@ -323,7 +309,8 @@ export const api = {
     } catch (e) {
       console.warn("Backend getHostProperties offline");
     }
-    return MOCK_PROPERTIES.filter(p => p.host?.id === Number(hostId) || p.status === 'PENDING' || p.host?.name?.includes('Surendra'));
+    // Demo mode: strictly match hostId or user email!
+    return MOCK_PROPERTIES.filter(p => p.host?.id === Number(hostId) || (userEmail && p.host?.email === userEmail));
   },
 
   // PUT /api/properties/{propertyId}/host/{hostId}
@@ -576,7 +563,7 @@ export const api = {
   // PUT /api/bookings/{bookingId}/host/{hostId}/confirm
   confirmBooking: async (bookingId, hostId) => {
     try {
-      const res = await fetch(`${BASE_URL}/bookings/${bookingId}/host/${hostId}/confirm`, {
+      const res = await fetch(`${BASE_URL}/bookings/{bookingId}/host/${hostId}/confirm`, {
         method: 'PUT',
         headers: getHeaders()
       });

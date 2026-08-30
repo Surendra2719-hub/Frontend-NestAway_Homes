@@ -51,8 +51,14 @@ export const HostPage = ({ onPropertyCreated }) => {
   useEffect(() => {
     const loadHostData = async () => {
       setLoading(true);
-      const hostId = user?.id || 101;
-      const props = await api.getHostProperties(hostId);
+      const hostId = user?.id;
+      if (!hostId) {
+        setHostProperties([]);
+        setHostBookings([]);
+        setLoading(false);
+        return;
+      }
+      const props = await api.getHostProperties(hostId, user?.email);
       const bookings = await api.getUserBookings(hostId, true);
       setHostProperties(props);
       setHostBookings(bookings);
