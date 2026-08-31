@@ -337,7 +337,7 @@ export const api = {
   },
 
   // GET /api/properties/host/{hostId} - Strictly Filtered by User ID
-  getHostProperties: async (hostId) => {
+  getHostProperties: async (hostId, userEmail) => {
     try {
       const res = await fetch(`${BASE_URL}/properties/host/${hostId}`, {
         headers: getHeaders()
@@ -348,6 +348,11 @@ export const api = {
     } catch (e) {
       console.warn("Backend getHostProperties offline");
     }
+    // Return sample properties ONLY for Master Host Surendra (hostId 101)
+    if (Number(hostId) === 101 || (userEmail && userEmail.toLowerCase().includes('surendra'))) {
+      return MOCK_PROPERTIES;
+    }
+    // Any new registered host starts with a clean empty list []
     return [];
   },
 

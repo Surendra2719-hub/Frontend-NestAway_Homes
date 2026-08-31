@@ -546,7 +546,7 @@ export const Navbar = ({ activePage, setActivePage }) => {
         }
 
         .mobile-drawer-content {
-          width: 82%;
+          width: 85%;
           max-width: 320px;
           height: 100%;
           background: #FFFFFF;
@@ -554,10 +554,11 @@ export const Navbar = ({ activePage, setActivePage }) => {
           flex-direction: column;
           box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
           animation: slideLeft 0.25s ease;
+          overflow: hidden;
         }
 
         .mobile-drawer-header {
-          padding: 1.25rem 1.5rem;
+          padding: 0.85rem 1rem;
           border-bottom: 1px solid var(--border-light);
           display: flex;
           align-items: center;
@@ -567,12 +568,12 @@ export const Navbar = ({ activePage, setActivePage }) => {
         .mobile-user-card {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
+          gap: 0.65rem;
         }
 
         .avatar-circle-lg {
-          width: 40px;
-          height: 40px;
+          width: 36px;
+          height: 36px;
           border-radius: 50%;
           background: var(--primary);
           color: white;
@@ -580,12 +581,12 @@ export const Navbar = ({ activePage, setActivePage }) => {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 1.1rem;
+          font-size: 1rem;
         }
 
         .user-role-tag-sm {
           display: block;
-          font-size: 0.7rem;
+          font-size: 0.68rem;
           color: var(--primary);
           font-weight: 700;
         }
@@ -593,43 +594,43 @@ export const Navbar = ({ activePage, setActivePage }) => {
         .close-drawer-btn {
           background: transparent;
           border: none;
-          padding: 0.35rem;
+          padding: 0.25rem;
           cursor: pointer;
         }
 
         .mobile-drawer-body {
-          padding: 1.5rem;
+          padding: 0.85rem 1rem;
           display: flex;
           flex-direction: column;
-          gap: 0.75rem;
-          overflow-y: auto;
+          gap: 0.25rem;
+          overflow-y: hidden;
         }
 
         .drawer-action-btn {
           width: 100%;
-          padding: 0.75rem;
-          font-size: 0.95rem;
+          padding: 0.6rem 0.85rem;
+          font-size: 0.88rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 0.5rem;
+          gap: 0.4rem;
           border-radius: var(--radius-md);
         }
 
         .drawer-divider {
           border: 0;
           border-top: 1px solid var(--border-light);
-          margin: 0.5rem 0;
+          margin: 0.25rem 0;
         }
 
         .drawer-nav-item {
           display: flex;
           align-items: center;
-          gap: 0.85rem;
-          padding: 0.75rem 1rem;
+          gap: 0.75rem;
+          padding: 0.5rem 0.75rem;
           border: none;
           background: transparent;
-          font-size: 0.95rem;
+          font-size: 0.88rem;
           font-weight: 500;
           color: var(--text-main);
           border-radius: var(--radius-md);
@@ -649,13 +650,13 @@ export const Navbar = ({ activePage, setActivePage }) => {
         .mobile-auth-grid {
           display: flex;
           flex-direction: column;
-          gap: 0.75rem;
-          margin-top: 0.5rem;
+          gap: 0.5rem;
+          margin-top: 0.25rem;
         }
 
         .full-btn {
           width: 100%;
-          padding: 0.75rem;
+          padding: 0.6rem;
         }
 
         @keyframes fadeIn {
