@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
-import { User, LogOut, Shield, PlusCircle, Heart, ChevronDown } from 'lucide-react';
+import { User, LogOut, Shield, PlusCircle, Heart, ChevronDown, Menu, X, Home, Compass, Calendar } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const Navbar = ({ activePage, setActivePage }) => {
   const { user, logout, openAuthModal, wishlist } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleNavClick = (page) => {
+    setActivePage(page);
+    setMobileMenuOpen(false);
+    setDropdownOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <header className="navbar-header">
@@ -12,7 +20,7 @@ export const Navbar = ({ activePage, setActivePage }) => {
         {/* Brand Logo - Option 1 Geometric House Roof & Gold Nest Emblem */}
         <button 
           className="brand-logo-btn" 
-          onClick={() => setActivePage('home')}
+          onClick={() => handleNavClick('home')}
         >
           <div className="logo-svg-wrapper">
             <svg width="34" height="34" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -26,24 +34,24 @@ export const Navbar = ({ activePage, setActivePage }) => {
           </span>
         </button>
 
-        {/* Center Nav Links */}
-        <nav className="center-nav-menu">
+        {/* Center Nav Links - Desktop Only */}
+        <nav className="center-nav-menu desktop-only">
           <button 
             className={`nav-link ${activePage === 'home' ? 'active' : ''}`}
-            onClick={() => setActivePage('home')}
+            onClick={() => handleNavClick('home')}
           >
             Home
           </button>
           <button 
             className={`nav-link ${activePage === 'explore' ? 'active' : ''}`}
-            onClick={() => setActivePage('explore')}
+            onClick={() => handleNavClick('explore')}
           >
             Explore
           </button>
           
           <button 
             className={`nav-link wishlist-nav-link ${activePage === 'wishlist' ? 'active' : ''}`}
-            onClick={() => setActivePage('wishlist')}
+            onClick={() => handleNavClick('wishlist')}
           >
             <Heart size={16} fill={wishlist.length > 0 ? "#FF385C" : "none"} color="#FF385C" />
             <span>Wishlist</span>
@@ -53,12 +61,12 @@ export const Navbar = ({ activePage, setActivePage }) => {
           </button>
         </nav>
 
-        {/* Right Actions depending on User Role (ADMIN vs HOST vs GUEST) */}
-        <div className="right-nav-actions">
+        {/* Right Actions - Desktop Only */}
+        <div className="right-nav-actions desktop-only">
           {user?.role === 'ADMIN' ? (
             <button 
               className="btn-primary admin-nav-btn" 
-              onClick={() => setActivePage('admin')}
+              onClick={() => handleNavClick('admin')}
             >
               <Shield size={16} />
               <span>Admin Panel</span>
@@ -66,7 +74,7 @@ export const Navbar = ({ activePage, setActivePage }) => {
           ) : user?.role === 'HOST' ? (
             <button 
               className="btn-secondary host-btn-small" 
-              onClick={() => setActivePage('host')}
+              onClick={() => handleNavClick('host')}
             >
               <PlusCircle size={16} />
               <span>Host Dashboard</span>
@@ -74,7 +82,7 @@ export const Navbar = ({ activePage, setActivePage }) => {
           ) : (
             <button 
               className="host-link-btn" 
-              onClick={() => setActivePage('host')}
+              onClick={() => handleNavClick('host')}
             >
               Become a Host
             </button>
@@ -103,23 +111,23 @@ export const Navbar = ({ activePage, setActivePage }) => {
                   <hr className="dropdown-divider" />
 
                   {user.role === 'ADMIN' && (
-                    <button onClick={() => setActivePage('admin')} className="dropdown-item admin-highlight">
+                    <button onClick={() => handleNavClick('admin')} className="dropdown-item admin-highlight">
                       <Shield size={16} />
                       <span>Admin Operations Dashboard</span>
                     </button>
                   )}
                   
-                  <button onClick={() => setActivePage('profile')} className="dropdown-item">
+                  <button onClick={() => handleNavClick('profile')} className="dropdown-item">
                     <User size={16} />
                     <span>My Profile & Settings</span>
                   </button>
 
-                  <button onClick={() => setActivePage('bookings')} className="dropdown-item">
-                    <Shield size={16} />
+                  <button onClick={() => handleNavClick('bookings')} className="dropdown-item">
+                    <Calendar size={16} />
                     <span>My Bookings</span>
                   </button>
 
-                  <button onClick={() => setActivePage('wishlist')} className="dropdown-item">
+                  <button onClick={() => handleNavClick('wishlist')} className="dropdown-item">
                     <Heart size={16} />
                     <span>Saved Wishlist ({wishlist.length})</span>
                   </button>
@@ -137,30 +145,138 @@ export const Navbar = ({ activePage, setActivePage }) => {
             <div className="guest-auth-buttons">
               <button 
                 className="btn-secondary nav-login-btn" 
-                onClick={() => setActivePage('auth')}
+                onClick={() => handleNavClick('auth')}
               >
                 Log in
               </button>
               <button 
                 className="btn-primary nav-signup-btn" 
-                onClick={() => setActivePage('auth')}
+                onClick={() => handleNavClick('auth')}
               >
                 Sign up
               </button>
             </div>
           )}
         </div>
+
+        {/* Mobile 3-Line Hamburger Icon Button (Mobile Only) */}
+        <button 
+          className="mobile-hamburger-btn mobile-only" 
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle Navigation Menu"
+        >
+          {mobileMenuOpen ? <X size={26} color="#222" /> : <Menu size={26} color="#222" />}
+        </button>
       </div>
+
+      {/* Mobile Slide-Down Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="mobile-drawer-overlay" onClick={() => setMobileMenuOpen(false)}>
+          <div className="mobile-drawer-content" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-drawer-header">
+              {user ? (
+                <div className="mobile-user-card">
+                  <div className="avatar-circle-lg">
+                    {user.name ? user.name[0].toUpperCase() : 'U'}
+                  </div>
+                  <div>
+                    <strong>{user.name}</strong>
+                    <span className="user-role-tag-sm">{user.role}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="mobile-guest-header">
+                  <span>Welcome to NestAway Homes</span>
+                </div>
+              )}
+              <button className="close-drawer-btn" onClick={() => setMobileMenuOpen(false)}>
+                <X size={22} />
+              </button>
+            </div>
+
+            <div className="mobile-drawer-body">
+              {/* Role-Based Primary Action */}
+              {user?.role === 'ADMIN' ? (
+                <button className="btn-primary drawer-action-btn admin-color" onClick={() => handleNavClick('admin')}>
+                  <Shield size={18} />
+                  <span>Admin Panel</span>
+                </button>
+              ) : user?.role === 'HOST' ? (
+                <button className="btn-secondary drawer-action-btn host-color" onClick={() => handleNavClick('host')}>
+                  <PlusCircle size={18} />
+                  <span>Host Dashboard</span>
+                </button>
+              ) : (
+                <button className="btn-primary drawer-action-btn" onClick={() => handleNavClick('host')}>
+                  <PlusCircle size={18} />
+                  <span>Become a Host</span>
+                </button>
+              )}
+
+              <hr className="drawer-divider" />
+
+              {/* Navigation Links */}
+              <button className={`drawer-nav-item ${activePage === 'home' ? 'active' : ''}`} onClick={() => handleNavClick('home')}>
+                <Home size={18} />
+                <span>Home Page</span>
+              </button>
+
+              <button className={`drawer-nav-item ${activePage === 'explore' ? 'active' : ''}`} onClick={() => handleNavClick('explore')}>
+                <Compass size={18} />
+                <span>Explore Stays</span>
+              </button>
+
+              <button className={`drawer-nav-item ${activePage === 'wishlist' ? 'active' : ''}`} onClick={() => handleNavClick('wishlist')}>
+                <Heart size={18} color="#FF385C" />
+                <span>Saved Wishlist ({wishlist.length})</span>
+              </button>
+
+              {user && (
+                <>
+                  <button className={`drawer-nav-item ${activePage === 'bookings' ? 'active' : ''}`} onClick={() => handleNavClick('bookings')}>
+                    <Calendar size={18} />
+                    <span>My Bookings</span>
+                  </button>
+
+                  <button className={`drawer-nav-item ${activePage === 'profile' ? 'active' : ''}`} onClick={() => handleNavClick('profile')}>
+                    <User size={18} />
+                    <span>My Profile & Settings</span>
+                  </button>
+                </>
+              )}
+
+              <hr className="drawer-divider" />
+
+              {/* Auth Action Buttons */}
+              {user ? (
+                <button className="drawer-nav-item logout-red" onClick={() => { logout(); setMobileMenuOpen(false); }}>
+                  <LogOut size={18} />
+                  <span>Logout</span>
+                </button>
+              ) : (
+                <div className="mobile-auth-grid">
+                  <button className="btn-secondary full-btn" onClick={() => handleNavClick('auth')}>
+                    Log in
+                  </button>
+                  <button className="btn-primary full-btn" onClick={() => handleNavClick('auth')}>
+                    Sign up
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         .navbar-header {
           position: sticky;
           top: 0;
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
+          background: rgba(255, 255, 255, 0.96);
+          backdrop-filter: blur(12px);
           border-bottom: 1px solid var(--border-light);
           z-index: 900;
-          height: 80px;
+          height: 72px;
           display: flex;
           align-items: center;
         }
@@ -178,6 +294,7 @@ export const Navbar = ({ activePage, setActivePage }) => {
           gap: 0.65rem;
           background: transparent;
           border: none;
+          cursor: pointer;
         }
 
         .logo-svg-wrapper {
@@ -187,13 +304,9 @@ export const Navbar = ({ activePage, setActivePage }) => {
           transition: transform 0.2s ease;
         }
 
-        .brand-logo-btn:hover .logo-svg-wrapper {
-          transform: scale(1.08);
-        }
-
         .brand-name {
           font-family: var(--font-heading);
-          font-size: 1.4rem;
+          font-size: 1.35rem;
           color: var(--text-main);
           letter-spacing: -0.02em;
         }
@@ -216,6 +329,7 @@ export const Navbar = ({ activePage, setActivePage }) => {
           border: none;
           padding: 0.5rem 0;
           position: relative;
+          cursor: pointer;
           transition: var(--transition);
         }
 
@@ -263,7 +377,6 @@ export const Navbar = ({ activePage, setActivePage }) => {
           font-size: 0.88rem;
           background: #222222;
           border-color: #222222;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .host-link-btn {
@@ -274,10 +387,7 @@ export const Navbar = ({ activePage, setActivePage }) => {
           border: none;
           padding: 0.5rem 0.85rem;
           border-radius: var(--radius-pill);
-        }
-
-        .host-link-btn:hover {
-          background: #F7F7F7;
+          cursor: pointer;
         }
 
         .host-btn-small {
@@ -312,6 +422,7 @@ export const Navbar = ({ activePage, setActivePage }) => {
           border-radius: var(--radius-pill);
           background: white;
           box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+          cursor: pointer;
         }
 
         .avatar-circle {
@@ -375,6 +486,7 @@ export const Navbar = ({ activePage, setActivePage }) => {
           background: transparent;
           border: none;
           text-align: left;
+          cursor: pointer;
         }
 
         .dropdown-item:hover {
@@ -390,10 +502,170 @@ export const Navbar = ({ activePage, setActivePage }) => {
           color: #DC2626;
         }
 
+        /* Mobile Hamburger & Drawer Styles */
+        .mobile-only {
+          display: none;
+        }
+
+        .desktop-only {
+          display: flex;
+        }
+
         @media (max-width: 768px) {
-          .center-nav-menu {
-            display: none;
+          .desktop-only {
+            display: none !important;
           }
+          .mobile-only {
+            display: flex !important;
+          }
+        }
+
+        .mobile-hamburger-btn {
+          background: transparent;
+          border: none;
+          padding: 0.4rem;
+          border-radius: var(--radius-md);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        }
+
+        .mobile-drawer-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(4px);
+          z-index: 1000;
+          display: flex;
+          justify-content: flex-end;
+          animation: fadeIn 0.2s ease;
+        }
+
+        .mobile-drawer-content {
+          width: 82%;
+          max-width: 320px;
+          height: 100%;
+          background: #FFFFFF;
+          display: flex;
+          flex-direction: column;
+          box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+          animation: slideLeft 0.25s ease;
+        }
+
+        .mobile-drawer-header {
+          padding: 1.25rem 1.5rem;
+          border-bottom: 1px solid var(--border-light);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .mobile-user-card {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .avatar-circle-lg {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: var(--primary);
+          color: white;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.1rem;
+        }
+
+        .user-role-tag-sm {
+          display: block;
+          font-size: 0.7rem;
+          color: var(--primary);
+          font-weight: 700;
+        }
+
+        .close-drawer-btn {
+          background: transparent;
+          border: none;
+          padding: 0.35rem;
+          cursor: pointer;
+        }
+
+        .mobile-drawer-body {
+          padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          overflow-y: auto;
+        }
+
+        .drawer-action-btn {
+          width: 100%;
+          padding: 0.75rem;
+          font-size: 0.95rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          border-radius: var(--radius-md);
+        }
+
+        .drawer-divider {
+          border: 0;
+          border-top: 1px solid var(--border-light);
+          margin: 0.5rem 0;
+        }
+
+        .drawer-nav-item {
+          display: flex;
+          align-items: center;
+          gap: 0.85rem;
+          padding: 0.75rem 1rem;
+          border: none;
+          background: transparent;
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: var(--text-main);
+          border-radius: var(--radius-md);
+          text-align: left;
+          width: 100%;
+        }
+
+        .drawer-nav-item:hover, .drawer-nav-item.active {
+          background: #F7F7F7;
+          color: var(--primary);
+        }
+
+        .logout-red {
+          color: #DC2626;
+        }
+
+        .mobile-auth-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          margin-top: 0.5rem;
+        }
+
+        .full-btn {
+          width: 100%;
+          padding: 0.75rem;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes slideLeft {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
         }
       `}</style>
     </header>

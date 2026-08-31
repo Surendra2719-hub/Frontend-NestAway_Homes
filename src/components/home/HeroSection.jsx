@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, MapPin, ChevronDown } from 'lucide-react';
+import { Search, MapPin, ChevronDown, SlidersHorizontal } from 'lucide-react';
 
 export const HeroSection = ({ onSearch }) => {
   const [city, setCity] = useState('Jaipur');
@@ -8,7 +8,7 @@ export const HeroSection = ({ onSearch }) => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    onSearch({ city, minPrice, maxPrice });
+    onSearch({ city, minPrice: Number(minPrice), maxPrice: Number(maxPrice) });
   };
 
   return (
@@ -16,7 +16,7 @@ export const HeroSection = ({ onSearch }) => {
       <div className="hero-background-overlay"></div>
       
       <div className="container hero-container">
-        {/* Left Headline Text matching Screen 2 */}
+        {/* Left Headline Text */}
         <div className="hero-content">
           <h1 className="hero-title">
             Find your<br />
@@ -29,8 +29,8 @@ export const HeroSection = ({ onSearch }) => {
             Hassle-free living.
           </p>
 
-          {/* Search Card Card matching Screen 2 */}
-          <form onSubmit={handleSearchSubmit} className="search-card-box">
+          {/* Ultra-Sleek Search Box Card */}
+          <form onSubmit={handleSearchSubmit} className="search-card-box glass-card-hero">
             <div className="search-field">
               <div className="search-field-header">
                 <MapPin size={16} className="field-icon" />
@@ -98,10 +98,10 @@ export const HeroSection = ({ onSearch }) => {
           background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80');
           background-size: cover;
           background-position: center right;
-          min-height: 520px;
+          min-height: 540px;
           display: flex;
           align-items: center;
-          padding: 4rem 0;
+          padding: 3.5rem 0;
         }
 
         .hero-background-overlay {
@@ -110,7 +110,7 @@ export const HeroSection = ({ onSearch }) => {
           left: 0;
           right: 0;
           bottom: 0;
-          background: linear-gradient(90deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.75) 50%, rgba(255,255,255,0.1) 100%);
+          background: linear-gradient(90deg, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.82) 55%, rgba(255,255,255,0.15) 100%);
           z-index: 1;
         }
 
@@ -125,27 +125,30 @@ export const HeroSection = ({ onSearch }) => {
 
         .hero-title {
           font-size: 3rem;
-          line-height: 1.15;
+          line-height: 1.12;
           color: var(--text-main);
           margin-bottom: 1.25rem;
+          font-weight: 800;
+          letter-spacing: -0.02em;
         }
 
         .hero-subtitle {
           font-size: 1.1rem;
           color: var(--text-muted);
-          margin-bottom: 2.5rem;
+          margin-bottom: 2.25rem;
           line-height: 1.5;
         }
 
-        .search-card-box {
-          background: #FFFFFF;
-          border-radius: var(--radius-lg);
-          padding: 0.85rem 1.25rem;
-          box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
+        .glass-card-hero {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(16px);
+          border-radius: var(--radius-xl);
+          padding: 1rem 1.35rem;
+          box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12);
           display: flex;
           align-items: center;
-          gap: 1rem;
-          border: 1px solid rgba(255, 255, 255, 0.8);
+          gap: 1.25rem;
+          border: 1px solid rgba(255, 255, 255, 0.9);
           max-width: 780px;
         }
 
@@ -175,7 +178,9 @@ export const HeroSection = ({ onSearch }) => {
         .field-label {
           font-size: 0.75rem;
           color: var(--text-muted);
-          font-weight: 500;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
         }
 
         .select-wrapper {
@@ -188,7 +193,7 @@ export const HeroSection = ({ onSearch }) => {
           border: none;
           padding: 0.2rem 1.5rem 0.2rem 0;
           font-weight: 700;
-          font-size: 1rem;
+          font-size: 1.05rem;
           color: var(--text-main);
           background: transparent;
           cursor: pointer;
@@ -205,32 +210,59 @@ export const HeroSection = ({ onSearch }) => {
 
         .divider-line {
           width: 1px;
-          height: 36px;
+          height: 38px;
           background: var(--border-medium);
         }
 
         .search-submit-btn {
-          padding: 0.9rem 1.5rem;
-          border-radius: var(--radius-md);
-          font-weight: 600;
+          padding: 0.95rem 1.75rem;
+          border-radius: var(--radius-lg);
+          font-weight: 700;
           white-space: nowrap;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          font-size: 0.95rem;
+          box-shadow: 0 8px 20px rgba(255, 56, 92, 0.3);
         }
 
         @media (max-width: 768px) {
           .hero-section {
             background-position: center;
+            padding: 2.25rem 0;
+            min-height: 460px;
+          }
+          .hero-background-overlay {
+            background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.9) 70%, rgba(255,255,255,0.75) 100%);
           }
           .hero-title {
-            font-size: 2.2rem;
+            font-size: 2.1rem;
+            margin-bottom: 0.85rem;
           }
-          .search-card-box {
+          .hero-subtitle {
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+          }
+          .glass-card-hero {
             flex-direction: column;
             align-items: stretch;
             gap: 1rem;
             padding: 1.25rem;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+          }
+          .search-field {
+            background: #FAF8F6;
+            padding: 0.6rem 0.85rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
           }
           .divider-line {
             display: none;
+          }
+          .search-submit-btn {
+            width: 100%;
+            padding: 0.85rem;
           }
         }
       `}</style>
