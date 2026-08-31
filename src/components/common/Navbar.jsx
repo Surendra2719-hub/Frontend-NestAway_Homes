@@ -504,20 +504,11 @@ export const Navbar = ({ activePage, setActivePage }) => {
 
         /* Mobile Hamburger & Drawer Styles */
         .mobile-only {
-          display: none;
+          display: none !important;
         }
 
         .desktop-only {
-          display: flex;
-        }
-
-        @media (max-width: 768px) {
-          .desktop-only {
-            display: none !important;
-          }
-          .mobile-only {
-            display: flex !important;
-          }
+          display: flex !important;
         }
 
         .mobile-hamburger-btn {
@@ -525,10 +516,19 @@ export const Navbar = ({ activePage, setActivePage }) => {
           border: none;
           padding: 0.4rem;
           border-radius: var(--radius-md);
-          display: flex;
+          display: none !important;
           align-items: center;
           justify-content: center;
           cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+          .desktop-only {
+            display: none !important;
+          }
+          .mobile-only, .mobile-hamburger-btn {
+            display: flex !important;
+          }
         }
 
         .mobile-drawer-overlay {
