@@ -59,6 +59,23 @@ export const AuthProvider = ({ children }) => {
       setToken('demo-token');
       localStorage.setItem('nestaway_user', JSON.stringify(newUser));
       localStorage.setItem('nestaway_token', 'demo-token');
+
+      // Save registered user credentials locally so login always recognizes newly created accounts
+      try {
+        const savedList = JSON.parse(localStorage.getItem('nestaway_registered_users') || '[]');
+        const updatedList = savedList.filter(u => u.email.toLowerCase() !== email.toLowerCase());
+        updatedList.push({
+          id: newUser.id,
+          name: newUser.name,
+          email: email.toLowerCase(),
+          password: password,
+          role: role
+        });
+        localStorage.setItem('nestaway_registered_users', JSON.stringify(updatedList));
+      } catch (e) {
+        console.warn("Could not cache registered user", e);
+      }
+
       return { success: true };
     }
     return { success: false, message: res.message || 'Registration failed' };
